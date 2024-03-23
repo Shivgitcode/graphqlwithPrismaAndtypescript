@@ -1,0 +1,21 @@
+{
+  "name": "employeeApp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.10.1",
+    "@prisma/client": "5.11.0",
+    "@types/node": "^20.11.30",
+    "graphql": "^16.8.1",
+    "prisma": "^5.11.0",
+    "ts-node": "^10.9.2"
+  }
+}
