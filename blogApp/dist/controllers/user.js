@@ -50,3 +50,12 @@ export const getCurrentUser = async (_, args, context) => {
         throw new ApolloError("not authorized");
     }
 };
+export const user = async (parent) => {
+    const { userId } = parent;
+    const findUser = await prisma.user.findFirst({
+        where: {
+            id: userId,
+        },
+    });
+    return findUser;
+};

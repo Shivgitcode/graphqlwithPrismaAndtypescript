@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { AllUser, User } from "../typeDeclarations.js";
+import { AllPost, AllUser, User } from "../typeDeclarations.js";
 import { hashing, isLoggedIn } from "../functions/hashing.js";
 import { getToken } from "../functions/getToken.js";
 import { ApolloError } from "apollo-server-express";
@@ -56,4 +56,14 @@ export const getCurrentUser = async (_: any, args: any, context: any) => {
   } else {
     throw new ApolloError("not authorized");
   }
+};
+
+export const user = async (parent: AllPost) => {
+  const { userId } = parent;
+  const findUser = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
+  return findUser;
 };

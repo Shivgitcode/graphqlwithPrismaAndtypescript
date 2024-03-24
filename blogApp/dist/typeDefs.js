@@ -5,6 +5,7 @@ export const typeDefs = gql `
     username: String!
     email: String!
     password: String!
+    posts: [Post]
   }
 
   type Post {
@@ -12,10 +13,12 @@ export const typeDefs = gql `
     title: String!
     description: String!
     userId: String!
+    user: User
   }
 
   type Query {
     users: [User]
+    post: [Post]
   }
 
   type Mutation {
