@@ -2,27 +2,31 @@ import { ApolloServer } from "apollo-server-express";
 import { typeDefs } from "./typeDefs.js";
 import { resolvers } from "./resolvers.js";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
+import http from "http";
 import express from "express";
+import { verifyToken } from "./functions/getToken.js";
 const app = express();
+const httpServer = http.createServer(app);
 app.use(cookieParser());
 const corsOptions = {
     origin: ["http://localhost:3000", "https://studio.apollographql.com"],
     credentials: true, // Allow credentials (cookies)
 };
-app.use(cors(corsOptions));
-app.use((req, res, next) => {
-    console.log(req.cookies);
-    next();
-});
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req, res }) => ({ req, res }),
+    context: async ({ req, res }) => {
+        const token = req.headers.authorization;
+        if (!token) {
+            return {};
+        }
+        const user = verifyToken(token);
+        return user;
+    },
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 await server.start();
-// app.use(cors(corsOption));
-server.applyMiddleware({ app, cors: false });
-app.listen("3000", () => {
-    console.log("listening on port 3000");
-});
+server.applyMiddleware({ app });
+await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
+console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);

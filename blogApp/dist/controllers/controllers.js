@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { hashing, isLoggedIn } from "./functions/hashing.js";
-import { getToken } from "./functions/getToken.js";
+import { hashing, isLoggedIn } from "../functions/hashing.js";
+import { getToken } from "../functions/getToken.js";
 import { ApolloError } from "apollo-server-express";
 const prisma = new PrismaClient();
 export const users = async (_, args) => {

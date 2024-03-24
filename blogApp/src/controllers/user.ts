@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { AllUser, User } from "./typeDeclarations.js";
-import { hashing, isLoggedIn } from "./functions/hashing.js";
-import { getToken } from "./functions/getToken.js";
+import { AllUser, User } from "../typeDeclarations.js";
+import { hashing, isLoggedIn } from "../functions/hashing.js";
+import { getToken } from "../functions/getToken.js";
+import { ApolloError } from "apollo-server-express";
 
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ export const registerUser = async (_: any, args: AllUser) => {
   return "user created";
 };
 
-export const loginUser = async (_: any, args: AllUser, { res }: any) => {
+export const loginUser = async (_: any, args: AllUser, context: any) => {
   const { username, password } = args.user;
   const findUser = await prisma.user.findUnique({
     where: {
@@ -37,12 +38,22 @@ export const loginUser = async (_: any, args: AllUser, { res }: any) => {
   }
   const isUser = await isLoggedIn(findUser.password, password);
   console.log(isUser);
+  console.log("this is context", context.id);
 
   if (isUser) {
-    const token = getToken(password);
-    res.cookie("jwt", token, { httpOnly: true });
+    const token = getToken(findUser.id);
+    console.log(token);
+
     return token;
   } else {
     throw new Error("incorrect username or password");
+  }
+};
+
+export const getCurrentUser = async (_: any, args: any, context: any) => {
+  if (context.id) {
+    return context.id;
+  } else {
+    throw new ApolloError("not authorized");
   }
 };

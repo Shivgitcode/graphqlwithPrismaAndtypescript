@@ -5,5 +5,11 @@ export interface User {
 }
 
 export interface AllUser {
-  user:User
+  user: User;
+}
+
+export interface Post {
+  title: string;
+  description: string;
+  userId: string;
 }

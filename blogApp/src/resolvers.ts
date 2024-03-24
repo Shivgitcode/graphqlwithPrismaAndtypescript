@@ -1,4 +1,11 @@
-import { users, registerUser, loginUser } from "./controllers.js";
+import {
+  users,
+  registerUser,
+  loginUser,
+  getCurrentUser,
+} from "./controllers/user.js";
+
+import { createPost } from "./controllers/post.js";
 
 export const resolvers = {
   Query: {
@@ -7,5 +14,7 @@ export const resolvers = {
   Mutation: {
     registerUser,
     loginUser,
+    getCurrentUser,
+    createPost,
   },
 };
