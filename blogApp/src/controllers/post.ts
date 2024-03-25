@@ -1,23 +1,40 @@
 import { PrismaClient } from "@prisma/client";
 import { AllUser, Post } from "../typeDeclarations";
+import { ApolloError } from "apollo-server-core";
 
 const prisma = new PrismaClient();
 
-export const createPost = async (_: any, { post }: { post: Post }) => {
-  const newPost = await prisma.post.create({
-    data: post,
-  });
+export const createPost = async (
+  _: any,
+  { post }: { post: Post },
+  context: any
+) => {
+  const { id } = context;
+  if (context.id) {
+    const newPost = await prisma.post.create({
+      data: {
+        ...post,
+        userId: id,
+      },
+    });
 
-  return newPost;
+    return newPost;
+  } else {
+    throw new ApolloError("Please login first");
+  }
 };
 
-export const post = async () => {
-  const allPost = await prisma.post.findMany({
-    include: {
-      user: true,
-    },
-  });
-  return allPost;
+export const post = async (_: any, args: any, context: any) => {
+  if (context.id) {
+    const allPost = await prisma.post.findMany({
+      include: {
+        user: true,
+      },
+    });
+    return allPost;
+  } else {
+    throw new ApolloError("Please login first ");
+  }
 };
 
 export const posts = async (parent: AllUser) => {
@@ -30,4 +47,36 @@ export const posts = async (parent: AllUser) => {
   });
 
   return allPost;
+};
+
+export const onePost = async (_: any, args: { id: string }, context: any) => {
+  if (context.id) {
+    const foundPost = await prisma.post.findFirst({
+      where: {
+        AND: [{ id: args.id }, { userId: context.id }],
+      },
+    });
+
+    return foundPost;
+  } else {
+    throw new ApolloError("please login first");
+  }
+};
+
+export const updatePost = async (
+  _: any,
+  args: { id: string; post: Post },
+  context: any
+) => {
+  if (context.id) {
+    await prisma.post.update({
+      where: {
+        id: args.id,
+      },
+      data: args.post,
+    });
+    return "post updated";
+  } else {
+    throw new ApolloError("Please login first ");
+  }
 };

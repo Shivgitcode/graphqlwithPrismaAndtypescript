@@ -1,18 +1,12 @@
 import { ApolloServer } from "apollo-server-express";
 import { typeDefs } from "./typeDefs.js";
 import { resolvers } from "./resolvers.js";
-import cookieParser from "cookie-parser";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import http from "http";
 import express from "express";
 import { verifyToken } from "./functions/getToken.js";
 const app = express();
 const httpServer = http.createServer(app);
-app.use(cookieParser());
-const corsOptions = {
-    origin: ["http://localhost:3000", "https://studio.apollographql.com"],
-    credentials: true, // Allow credentials (cookies)
-};
 const server = new ApolloServer({
     typeDefs,
     resolvers,

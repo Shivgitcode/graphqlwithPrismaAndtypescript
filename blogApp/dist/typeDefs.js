@@ -19,6 +19,7 @@ export const typeDefs = gql `
   type Query {
     users: [User]
     post: [Post]
+    onePost(id: ID!): Post
   }
 
   type Mutation {
@@ -26,6 +27,7 @@ export const typeDefs = gql `
     loginUser(user: LoginInput): String
     getCurrentUser(id: ID!): String
     createPost(post: PostInput): Post
+    updatePost(id: ID!, post: PostInput): String
   }
 
   input UserInput {
