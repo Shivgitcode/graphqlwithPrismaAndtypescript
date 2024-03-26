@@ -51,13 +51,23 @@ export const posts = async (parent: AllUser) => {
 
 export const onePost = async (_: any, args: { id: string }, context: any) => {
   if (context.id) {
-    const foundPost = await prisma.post.findFirst({
+    const findPost = await prisma.post.findFirst({
       where: {
-        AND: [{ id: args.id }, { userId: context.id }],
+        userId: context.id,
       },
     });
+    console.log(findPost);
+    if (findPost) {
+      const foundPost = await prisma.post.findFirst({
+        where: {
+          AND: [{ id: args.id }, { userId: context.id }],
+        },
+      });
 
-    return foundPost;
+      return foundPost;
+    } else {
+      throw new ApolloError("you are not authorized to perform this action");
+    }
   } else {
     throw new ApolloError("please login first");
   }
@@ -69,13 +79,22 @@ export const updatePost = async (
   context: any
 ) => {
   if (context.id) {
-    await prisma.post.update({
+    const findPost = await prisma.post.findFirst({
       where: {
-        id: args.id,
+        userId: context.id,
       },
-      data: args.post,
     });
-    return "post updated";
+    if (findPost) {
+      await prisma.post.update({
+        where: {
+          id: args.id,
+        },
+        data: args.post,
+      });
+      return "post updated";
+    } else {
+      throw new ApolloError("you are not authorized to perform this action");
+    }
   } else {
     throw new ApolloError("Please login first ");
   }

@@ -14,7 +14,7 @@ datasource db {
 }
 
 model User{
-  id String @id @default(uuid())
+  id String @id @default(uuid()) @unique
   username String @unique
   email String 
   password String
@@ -26,5 +26,5 @@ model Post{
   title String 
   description String
   user User @relation(fields: [userId],references: [id])
-  userId String
+  userId String @unique
 }
