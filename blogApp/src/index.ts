@@ -1,8 +1,10 @@
 import { ApolloError, ApolloServer } from "apollo-server-express";
 import { typeDefs } from "./typeDefs.js";
+import { expressMiddleware } from "@apollo/server/express4";
 import { resolvers } from "./resolvers.js";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import http from "http";
+import cors from "cors";
 
 import express from "express";
 import { verifyToken } from "./functions/getToken.js";
@@ -27,10 +29,18 @@ const server = new ApolloServer({
 
 await server.start();
 
-server.applyMiddleware({ app });
+app.use(
+  cors<cors.CorsRequest>({
+    methods: "POST GET PUT PATCH DELETE",
+    origin: ["http://localhost:5174"],
+  })
+);
+
+app.use(express.json());
+
+// server.applyMiddleware({ app });
 
 await new Promise<void>((resolve) =>
   httpServer.listen({ port: 4000 }, resolve)
 );
-
-console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
+console.log(`🚀 Server ready at http://localhost:4000/graphql`);
